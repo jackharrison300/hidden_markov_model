@@ -206,6 +206,13 @@ class ParticleFilter(Inference):
         landmarks: a list of the coordinate (x, y) of each landmark.
         """
         # Please finish the code below
+
+        # For each particle, compute weight
+
+        # Don't understand step 2
+
+        # update belief table with new particle distribution
+
         pass
 
 
@@ -226,7 +233,23 @@ class ParticleFilter(Inference):
             probability that can be obtained by the function self.transition_model(r,c).
         """
         # Please finish the code below
-        pass
+
+        # Get distribution of self.particles at time t
+        current_particles = self.particles.copy()
+
+        # Sample each particle using transition model
+        # from prob found, chance that particle will go to new cell
+        new_particles = []
+        for particle in current_particles:
+            model = self.transition_model(particle[0], particle[1])
+            new_position = random.choice(model)[1]  # am I supposed to have this be random? or the max probability?
+            new_particles.append(new_position)
+
+        # Updates self.particles
+        self.particles = new_particles
+
+        # Update belief table with new particle dist
+        self.updateBelief()
 
 
 
