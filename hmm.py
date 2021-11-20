@@ -242,7 +242,13 @@ class ParticleFilter(Inference):
         new_particles = []
         for particle in current_particles:
             model = self.transition_model(particle[0], particle[1])
-            new_position = random.choice(model)[1]  # am I supposed to have this be random? or the max probability?
+            choices = [x[1] for x in model]
+            weights = [x[0] for x in model]
+            new_position = random.choices(
+                population=choices,
+                weights=weights,
+                k=1
+            )[0]  # am I supposed to have this be random? or the max probability?
             new_particles.append(new_position)
 
         # Updates self.particles
