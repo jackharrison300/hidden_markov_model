@@ -132,7 +132,15 @@ class ExactInference(Inference):
         landmarks: a list of the (x, y) coordinate  of each landmark.
         """
         # Please finish the code below
-        pass
+        
+        for i in range(self.n_rows):
+            for j in range(self.n_cols):
+                prob = 1
+                for k in range(len(landmarks)):
+                    mean = math.dist(self.get_coordinate(i, j), landmarks[k])
+                    prob *= normal_pdf(mean, App.SENSOR_NOISE, observed_distances[k])
+                self.belief[i][j] = prob * self.belief[i][j]
+        self.belief = self.normalize(self.belief)
 
 
     def timeUpdate(self):
@@ -148,7 +156,19 @@ class ExactInference(Inference):
 		    self.belief = self.normalize(self.belief)!
         """
         # Please finish the code below 
-        pass
+        next_belief = [[0]*self.n_cols for _ in range(self.n_rows)]
+        for i in range(self.n_rows):
+            for j in range(self.n_cols):
+                for trans in self.transition_model(i, j):
+                    prob = trans[0]
+                    r_next = trans[1][0]
+                    c_next = trans[1][1]
+                    next_belief[r_next][c_next] += prob * self.belief[i][j]
+
+        self.belief = next_belief
+        self.belief = self.normalize(self.belief)
+                
+
 
 
 
