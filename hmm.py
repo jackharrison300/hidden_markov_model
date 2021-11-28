@@ -228,10 +228,27 @@ class ParticleFilter(Inference):
         # Please finish the code below
 
         # For each particle, compute weight
+        position_weight = {k: 0.0 for k in self.particles}
 
-        # Don't understand step 2
+        for particle in self.particles:
+            r, c = particle
+            coordinates = self.get_coordinate(r, c)
+            probability = 1.0
+            for landmark, distance in zip(landmarks, observed_distances):
+                dist = math.dist(coordinates, landmark)
+                probability *= normal_pdf(dist, App.SENSOR_NOISE, distance)
+                position_weight[particle] += probability  # left probability NOT normalized since particle filtering
 
         # update belief table with new particle distribution
+        positions = [k for k in position_weight.keys()]
+        weights = [position_weight[k] for k in positions]
+        self.particles = random.choices(
+            population=positions,
+            weights=weights,
+            k=self.NUM_PARTICLES
+        )
+
+        self.updateBelief()
 
         pass
 
