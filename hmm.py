@@ -237,7 +237,7 @@ class ParticleFilter(Inference):
             for landmark, distance in zip(landmarks, observed_distances):
                 dist = math.dist(coordinates, landmark)
                 probability *= normal_pdf(dist, App.SENSOR_NOISE, distance)
-                position_weight[particle] += probability  # left probability NOT normalized since particle filtering
+            position_weight[particle] += probability  # left probability NOT normalized since particle filtering
 
         # update belief table with new particle distribution
         positions = [k for k in position_weight.keys()]
