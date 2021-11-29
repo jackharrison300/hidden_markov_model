@@ -137,8 +137,11 @@ class ExactInference(Inference):
             for j in range(self.n_cols):
                 prob = 1
                 for k in range(len(landmarks)):
+                    # find mean of distribution from euclidean distance
                     mean = math.dist(self.get_coordinate(i, j), landmarks[k])
+                    # multiply current probability by PDF(e^i_{t})
                     prob *= normal_pdf(mean, App.SENSOR_NOISE, observed_distances[k])
+                # update self.belief
                 self.belief[i][j] = prob * self.belief[i][j]
         self.belief = self.normalize(self.belief)
 
@@ -156,6 +159,8 @@ class ExactInference(Inference):
 		    self.belief = self.normalize(self.belief)!
         """
         # Please finish the code below 
+
+        # create next_belief to hold t+1 belief
         next_belief = [[0]*self.n_cols for _ in range(self.n_rows)]
         for i in range(self.n_rows):
             for j in range(self.n_cols):
@@ -163,8 +168,9 @@ class ExactInference(Inference):
                     prob = trans[0]
                     r_next = trans[1][0]
                     c_next = trans[1][1]
+                    # add p(x_{t+1}|x_t)p(x_t|e_{1:t}) to current state of p(x_{t+1}|e_{1:t})
                     next_belief[r_next][c_next] += prob * self.belief[i][j]
-
+        #change self-belief to next_belief, reflecting t+1
         self.belief = next_belief
         self.belief = self.normalize(self.belief)
                 
@@ -237,7 +243,7 @@ class ParticleFilter(Inference):
             for landmark, distance in zip(landmarks, observed_distances):
                 dist = math.dist(coordinates, landmark)
                 probability *= normal_pdf(dist, App.SENSOR_NOISE, distance)
-                position_weight[particle] += probability  # left probability NOT normalized since particle filtering
+            position_weight[particle] += probability  # left probability NOT normalized since particle filtering
 
         # update belief table with new particle distribution
         positions = [k for k in position_weight.keys()]
@@ -249,8 +255,6 @@ class ParticleFilter(Inference):
         )
 
         self.updateBelief()
-
-        pass
 
 
     def timeUpdate(self):
